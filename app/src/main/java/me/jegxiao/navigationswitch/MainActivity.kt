@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var shizukuStatus: TextView
     private lateinit var openShizukuButton: MaterialButton
     private lateinit var grantShizukuButton: MaterialButton
+    private lateinit var versionText: TextView
 
     private var switching = false
 
@@ -87,6 +88,7 @@ class MainActivity : AppCompatActivity() {
         setupEdgeToEdge()
 
         adbCommand.text = getString(R.string.adb_command, packageName)
+        versionText.text = getString(R.string.version_label, appVersionName())
         copyButton.setOnClickListener { copyAdbCommand() }
         recheckButton.setOnClickListener {
             refreshUi()
@@ -141,6 +143,14 @@ class MainActivity : AppCompatActivity() {
         shizukuStatus = findViewById(R.id.shizuku_status)
         openShizukuButton = findViewById(R.id.open_shizuku_button)
         grantShizukuButton = findViewById(R.id.grant_shizuku_button)
+        versionText = findViewById(R.id.version_text)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun appVersionName(): String = try {
+        packageManager.getPackageInfo(packageName, 0).versionName ?: ""
+    } catch (_: Exception) {
+        ""
     }
 
     private fun setupEdgeToEdge() {
