@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">导航切换</string>
+    <string name="home_title">导航方式</string>
+    <string name="home_subtitle">三键导航与手势导航，一键切换</string>
+
+    <string name="mode_three">三键导航</string>
+    <string name="mode_two">二键导航</string>
+    <string name="mode_gesture">手势导航</string>
+    <string name="mode_three_short">三键</string>
+    <string name="mode_two_short">二键</string>
+    <string name="mode_gesture_short">手势</string>
+
+    <string name="mode_three_desc">屏幕底部显示返回、主页、多任务三个按键</string>
+    <string name="mode_two_desc">返回键与上滑手势混合的导航方式</string>
+    <string name="mode_gesture_desc">从屏幕底部上滑回到桌面，从边缘侧滑返回</string>
+
+    <string name="switch_to_gesture">切换为手势导航</string>
+    <string name="switch_to_three">切换为三键导航</string>
+
+    <string name="permission_title">需要一次授权</string>
+    <string name="permission_desc">Android 不允许普通应用直接修改系统导航方式。请用数据线连接电脑，执行下面的命令完成授权。只需一次，之后无需电脑。</string>
+    <string name="adb_command">adb shell pm grant %1$s android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="copy_command">复制命令</string>
+    <string name="recheck">重新检查</string>
+    <string name="root_grant">没有电脑？尝试 Root 授权</string>
+
+    <string name="shizuku_title">需要 Shizuku</string>
+    <string name="shizuku_desc">荣耀 / 华为系统不允许普通应用直接切换导航方式。安装并启动 Shizuku 后授予权限，即可一键切换。</string>
+    <string name="shizuku_steps">1. 安装 Shizuku\n2. 按 Shizuku 内引导启动服务\n3. 回到本页点击“授予权限”</string>
+    <string name="shizuku_status_not_running">状态：Shizuku 未运行</string>
+    <string name="shizuku_status_running">状态：Shizuku 已运行，尚未授权</string>
+    <string name="shizuku_status_granted">状态：已授权，可以一键切换</string>
+    <string name="shizuku_open">打开 Shizuku</string>
+    <string name="shizuku_grant">授予权限</string>
+    <string name="shizuku_granted">已授权</string>
+    <string name="tile_need_shizuku">需要 Shizuku</string>
+    <string name="toast_shizuku_not_running">Shizuku 未运行，请先启动 Shizuku</string>
+    <string name="toast_shizuku_not_installed">未安装 Shizuku</string>
+    <string name="toast_need_shizuku">请先完成 Shizuku 授权</string>
+    <string name="toast_shizuku_granted">Shizuku 授权成功</string>
+
+    <string name="toast_copied">命令已复制</string>
+    <string name="toast_granted">授权成功，现在可以一键切换了</string>
+    <string name="toast_still_missing">仍未检测到授权，请确认命令执行成功</string>
+    <string name="toast_switched_gesture">已切换为手势导航</string>
+    <string name="toast_switched_three">已切换为三键导航</string>
+    <string name="toast_need_permission">请先完成 adb 授权</string>
+    <string name="toast_failed">切换失败：%1$s</string>
+    <string name="toast_failed_generic">切换失败，请重试</string>
+    <string name="toast_unsupported">当前系统不支持手势导航（需 Android 10 及以上）</string>
+    <string name="toast_root_trying">正在尝试 Root 授权…</string>
+    <string name="toast_root_granted">Root 授权成功</string>
+    <string name="toast_root_failed">Root 不可用或授权被拒绝</string>
+
+    <string name="unsupported_title">系统不支持</string>
+    <string name="unsupported_desc">手势导航需要 Android 10（API 29）及以上版本。</string>
+
+    <string name="widget_label">导航切换</string>
+    <string name="widget_description">点按即可在三键导航和手势导航之间切换</string>
+    <string name="widget_grant">点按授权</string>
+    <string name="widget_unsupported">不支持</string>
+
+    <string name="tile_label">导航方式</string>
+    <string name="tile_content_desc">点按切换三键导航和手势导航</string>
+
+    <string name="footer_hint">荣耀 / 华为机型通过 Shizuku 切换；其他机型需先完成 adb 授权。切换后系统界面会短暂重载，属于正常现象。</string>
+
+    <string name="error_write_rejected">系统拒绝写入</string>
+    <string name="error_not_applied">系统未采用新的导航方式</string>
+    <string name="error_unknown">未知错误</string>
+</resources>

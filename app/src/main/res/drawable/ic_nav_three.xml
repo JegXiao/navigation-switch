@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- triangle / circle / square: the classic three-button navigation bar -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M6,9.5L3.4,15h5.2z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M9.4,12.2a2.6,2.6 0 1,0 5.2,0a2.6,2.6 0 1,0 -5.2,0" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M16,9.6h4.2v4.8H16z" />
+</vector>

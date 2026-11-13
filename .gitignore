@@ -1,0 +1,30 @@
+*.iml
+.gradle/
+/.gradle/
+.idea/
+.kotlin/
+.DS_Store
+
+# Build output
+/build/
+build/
+/captures/
+app/build/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.hprof
+
+# Local machine configuration
+local.properties
+/local.properties
+keystore.properties
+
+# Signing material must never be committed
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The DayNight parent already provides the dark color set. Status/nav bar icon
+         appearance is handled at runtime in MainActivity. -->
+</resources>

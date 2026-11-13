@@ -1,0 +1,235 @@
+# 导航切换 | Navigation Switch
+
+> 一键在三键导航和手势导航之间切换，支持桌面小组件和快捷设置磁贴。
+
+**中文** · [ English](#english)
+
+---
+
+## 功能特性
+
+- 三键导航 ⇄ 手势导航一键切换
+- 1×1 桌面小组件，点按即切换
+- 快捷设置磁贴，下拉控制中心即可切换
+- 自动识别荣耀 / 华为，使用 Shizuku 执行系统命令
+- 其他 Android 10+ 设备通过 adb 授权 `WRITE_SECURE_SETTINGS`
+- 无网络权限、无统计、无广告、无常驻后台服务
+
+## 快速开始
+
+### 方式一：安装 APK
+
+从 [Releases](https://github.com/JegXiao/navigation-switch/releases/latest) 下载最新的 `navigation-switch-<版本>-debug.apk` 并安装。
+
+> CI 使用临时 debug 签名，不同次构建的 APK 签名可能不同，跨版本升级通常需要先卸载。卸载会清除 adb 授权、Shizuku 授权和桌面小组件。
+
+安装后还需要完成一次授权：
+
+**普通 Android 设备（AOSP / Pixel 等）**
+
+```bash
+adb shell pm grant me.jegxiao.navigationswitch android.permission.WRITE_SECURE_SETTINGS
+```
+
+**荣耀 / 华为设备**
+
+1. 安装 [Shizuku](https://shizuku.rikka.app/)；
+2. 按 Shizuku 内引导启动服务（无线调试或 root）；
+3. 打开“导航切换”，在“需要 Shizuku”卡片里点“授予权限”。
+
+### 方式二：从源码编译
+
+```bash
+git clone git@github.com:JegXiao/navigation-switch.git
+cd navigation-switch
+./gradlew assembleDebug
+```
+
+生成的 APK 在 `app/build/outputs/apk/debug/app-debug.apk`。
+
+编译环境（实测）：
+
+- Android Studio / Gradle Wrapper 9.6.0
+- AGP 9.5.1
+- JDK 21（CI）/ JDK 25（本机）
+- compileSdk 37，minSdk 24，targetSdk 37
+- Android SDK Platform 37.0（CI 同时安装 37.1）
+
+`local.properties` 由 Android Studio 自动生成（`sdk.dir`），已被 `.gitignore` 忽略；项目不需要任何 API Key。
+
+## 使用
+
+1. 打开 App，主界面显示当前导航方式；
+2. 点主按钮在“三键导航”和“手势导航”之间切换；
+3. 桌面长按空白处 → 小组件 → 搜索“导航切换” → 添加 1×1 小组件；
+4. 下拉控制中心 → 编辑 → 添加“导航方式”磁贴。
+
+切换后系统界面会短暂重载，属于正常现象。
+
+## 兼容性
+
+- Android 10（API 29）及以上才有手势导航；更低版本只显示三键。
+- **AOSP / Pixel / 接近原生**：通过 `WRITE_SECURE_SETTINGS` 写入 `Settings.Secure.navigation_mode`。
+- **荣耀 / 华为**：系统不监听 AOSP 的 `navigation_mode`，需要 Shizuku 以 shell 身份执行 overlay 命令。已在荣耀 DV-AN00（Android 16 / MagicOS 10）实测。
+- 其他品牌（小米、三星、OPPO、vivo 等）可能使用私有设置或私有服务，不保证有效；AOSP 路径只校验设置值写入成功，不校验导航栏实际变化。
+
+## 工作原理
+
+- AOSP 的导航方式存储在 `Settings.Secure.navigation_mode`：`0` 三键、`1` 二键、`2` 手势。
+- 荣耀 / 华为使用 `101`（三键）/ `105`（手势），并配合 `secure_gesture_navigation`；实际切换通过 OverlayManager 开关 `com.android.internal.systemui.navbar.gestural`。
+- App 用 Shizuku 提供的 shell 身份执行：
+
+```bash
+settings put secure navigation_mode 105
+settings put secure secure_gesture_navigation 1
+cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural
+```
+
+切回三键时写入 `101` / `0`，并关闭 gestural overlay。
+
+- 桌面小组件和快捷磁贴都调用同一个 `NavModeManager`，状态自动同步。
+
+## 权限与隐私
+
+- `WRITE_SECURE_SETTINGS`：Android 不允许普通应用申请，需要用 adb 手动授予；它可以修改系统安全设置，请只在信任的设备上使用。
+- Shizuku：仅荣耀 / 华为设备需要，用于以 shell 身份执行固定的系统命令。
+- App 没有声明 `INTERNET` 权限，不联网、不收集数据、没有统计和广告；打开 Shizuku 官网时通过系统浏览器跳转。
+
+## 已知限制
+
+- 重新安装 App 后需要重新执行 adb 授权 / Shizuku 授权；桌面小组件需要重新添加。
+- Shizuku 服务在重启手机后需要重新启动（root 模式可在 Shizuku 内开启开机自启）。
+- 部分厂商 ROM 会忽略 `navigation_mode`，可能出现“提示成功但导航栏没变”。
+- 多用户 / 平行空间 / 分身应用中的设置相互独立，需要在对应空间内安装并授权。
+
+## 项目结构
+
+```text
+app/src/main/java/me/jegxiao/navigationswitch/
+├── MainActivity.kt              # 主界面、授权引导
+├── NavModeManager.kt            # 读取/切换导航方式（AOSP + 荣耀/华为）
+├── ShizukuHelper.kt             # Shizuku 权限与 shell 执行
+├── NavigationWidgetProvider.kt  # 1×1 桌面小组件
+├── NavTileService.kt            # 快捷设置磁贴
+└── RootShell.kt                 # 可选：用 root 授予 WRITE_SECURE_SETTINGS
+
+app/src/main/java/rikka/shizuku/ShizukuAccess.java
+                                  # 兼容 Shizuku 13.1.5 的非公开 newProcess
+```
+
+---
+
+# English
+
+> One-tap switch between 3-button and gesture navigation, with a home screen widget and a Quick Settings tile.
+
+## Features
+
+- Toggle between 3-button and gesture navigation with one tap
+- 1×1 home screen widget
+- Quick Settings tile
+- Detects Honor / Huawei and uses Shizuku to run the required system commands
+- Other Android 10+ devices use `WRITE_SECURE_SETTINGS` granted over adb
+- No internet permission, no analytics, no ads, no persistent background service
+
+## Quick Start
+
+### Install the APK
+
+Download the latest `navigation-switch-<version>-debug.apk` from [Releases](https://github.com/JegXiao/navigation-switch/releases/latest).
+
+> CI builds are signed with a temporary debug key, so different builds may have different signatures. Updating across builds usually requires uninstalling first, which clears the adb grant, Shizuku authorization and widgets.
+
+Then grant the required permission once:
+
+**AOSP / Pixel-like devices**
+
+```bash
+adb shell pm grant me.jegxiao.navigationswitch android.permission.WRITE_SECURE_SETTINGS
+```
+
+**Honor / Huawei devices**
+
+1. Install [Shizuku](https://shizuku.rikka.app/);
+2. Start its service following the in-app guide (wireless debugging or root);
+3. Open Navigation Switch and tap “授予权限” in the Shizuku card.
+
+### Build from source
+
+```bash
+git clone git@github.com:JegXiao/navigation-switch.git
+cd navigation-switch
+./gradlew assembleDebug
+```
+
+The APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
+
+Verified toolchain:
+
+- Gradle Wrapper 9.6.0
+- AGP 9.5.1
+- JDK 21 (CI) / JDK 25 (local)
+- compileSdk 37, minSdk 24, targetSdk 37
+- Android SDK Platform 37.0 (CI also installs 37.1)
+
+`local.properties` is generated by Android Studio and ignored by Git. No API keys are required.
+
+## Usage
+
+1. Open the app to see the current navigation mode;
+2. Tap the main button to switch between 3-button and gesture navigation;
+3. Long-press the home screen → Widgets → search for “导航切换” → add the 1×1 widget;
+4. Pull down the Quick Settings panel → edit → add the “导航方式” tile.
+
+SystemUI reloads briefly after switching. This is expected.
+
+## Compatibility
+
+- Gesture navigation requires Android 10 (API 29) or newer; older devices only support 3-button navigation.
+- **AOSP / Pixel-like ROMs**: the app writes `Settings.Secure.navigation_mode` using `WRITE_SECURE_SETTINGS`.
+- **Honor / Huawei**: their SystemUI ignores the AOSP value; Shizuku is used to run the overlay commands with shell identity. Tested on Honor DV-AN00 (Android 16 / MagicOS 10).
+- Other OEMs (Xiaomi, Samsung, OPPO, vivo, etc.) may use private settings or services and are not guaranteed to work. The AOSP path only verifies that the setting was written, not that the navigation bar actually changed.
+
+## How It Works
+
+- AOSP stores the navigation mode in `Settings.Secure.navigation_mode`: `0` = 3-button, `1` = 2-button, `2` = gesture.
+- Honor / Huawei use `101` (3-button) / `105` (gesture) plus `secure_gesture_navigation`, and apply the change through OverlayManager by toggling `com.android.internal.systemui.navbar.gestural`.
+- With Shizuku, the app runs:
+
+```bash
+settings put secure navigation_mode 105
+settings put secure secure_gesture_navigation 1
+cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.gestural
+```
+
+Switching back to 3-button writes `101` / `0` and disables the gestural overlay.
+
+- The widget and Quick Settings tile call the same `NavModeManager`, so their state stays in sync.
+
+## Permissions & Privacy
+
+- `WRITE_SECURE_SETTINGS` is not grantable to normal apps; it must be granted over adb. It can modify secure system settings, so use it only on devices you trust.
+- Shizuku is only used on Honor / Huawei devices to execute a fixed set of shell commands.
+- The app does not declare the `INTERNET` permission. It does not collect data and contains no analytics or ads. Opening the Shizuku website is delegated to the system browser.
+
+## Known Limitations
+
+- Reinstalling the app requires granting adb / Shizuku permission again and re-adding widgets.
+- The Shizuku service must be restarted after a reboot (root mode can enable start-on-boot inside Shizuku).
+- Some vendor ROMs ignore `navigation_mode`; the app may report success while the navigation bar does not change.
+- Multi-user / Parallel Space / app clone environments have independent settings and require separate installation and authorization.
+
+## Project Layout
+
+```text
+app/src/main/java/me/jegxiao/navigationswitch/
+├── MainActivity.kt              # UI and permission setup
+├── NavModeManager.kt            # Read/switch navigation mode (AOSP + Honor/Huawei)
+├── ShizukuHelper.kt             # Shizuku permission and shell execution
+├── NavigationWidgetProvider.kt  # 1×1 home screen widget
+├── NavTileService.kt            # Quick Settings tile
+└── RootShell.kt                 # Optional: root grant for WRITE_SECURE_SETTINGS
+
+app/src/main/java/rikka/shizuku/ShizukuAccess.java
+                                  # Bridges Shizuku 13.1.5's non-public newProcess
+```

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand">#FF7C90FF</color>
+    <color name="brand_dark">#FF4F6BFF</color>
+    <color name="brand_container">#334F6BFF</color>
+    <color name="card_stroke">#33FFFFFF</color>
+    <color name="code_bg">#1FFFFFFF</color>
+</resources>

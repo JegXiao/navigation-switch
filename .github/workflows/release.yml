@@ -1,0 +1,56 @@
+name: Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-37.0 platforms;android-37.1 build-tools;37.0.0'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Read version and verify tag
+        id: version
+        shell: bash
+        run: |
+          VERSION="$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)"
+          if [ "v$VERSION" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match versionName v$VERSION"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Prepare release asset
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk \
+            "navigation-switch-${{ steps.version.outputs.version }}-debug.apk"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: v${{ steps.version.outputs.version }}
+          files: navigation-switch-${{ steps.version.outputs.version }}-debug.apk
+          generate_release_notes: true
