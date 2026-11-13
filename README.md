@@ -62,7 +62,8 @@ cd navigation-switch
 1. 打开 App，主界面显示当前导航方式；
 2. 点主按钮在“三键导航”和“手势导航”之间切换；
 3. 桌面长按空白处 → 小组件 → 搜索“导航切换” → 添加 1×1 小组件；
-4. 下拉控制中心 → 编辑 → 添加“导航方式”磁贴。
+4. 下拉控制中心 → 编辑 → 添加“导航方式”磁贴；
+5. 点击底部版本号可复制版本信息，方便反馈问题。
 
 切换后系统界面会短暂重载，属于正常现象。
 
@@ -180,7 +181,8 @@ Verified toolchain:
 1. Open the app to see the current navigation mode;
 2. Tap the main button to switch between 3-button and gesture navigation;
 3. Long-press the home screen → Widgets → search for “导航切换” → add the 1×1 widget;
-4. Pull down the Quick Settings panel → edit → add the “导航方式” tile.
+4. Pull down the Quick Settings panel → edit → add the “导航方式” tile;
+5. Tap the version text at the bottom to copy version info for bug reports.
 
 SystemUI reloads briefly after switching. This is expected.
 

@@ -66,6 +66,7 @@
 
     <string name="footer_hint">荣耀 / 华为机型通过 Shizuku 切换；其他机型需先完成 adb 授权。切换后系统界面会短暂重载，属于正常现象。</string>
     <string name="version_label">版本 %1$s</string>
+    <string name="toast_version_copied">版本信息已复制</string>
 
     <string name="error_write_rejected">系统拒绝写入</string>
     <string name="error_not_applied">系统未采用新的导航方式</string>

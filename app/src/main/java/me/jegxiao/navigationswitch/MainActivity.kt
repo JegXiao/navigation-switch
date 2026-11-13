@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         openShizukuButton.setOnClickListener { openShizuku() }
         grantShizukuButton.setOnClickListener { grantShizukuPermission() }
         switchButton.setOnClickListener { performSwitch() }
+        versionText.setOnClickListener { copyVersionInfo() }
 
         Shizuku.addBinderReceivedListenerSticky(binderReceivedListener)
         Shizuku.addBinderDeadListener(binderDeadListener)
@@ -319,6 +320,13 @@ class MainActivity : AppCompatActivity() {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.app_name), adbCommand.text))
         toast(R.string.toast_copied)
+    }
+
+    private fun copyVersionInfo() {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val info = "${getString(R.string.app_name)} v${appVersionName()} ($packageName)"
+        clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.app_name), info))
+        toast(R.string.toast_version_copied)
     }
 
     private fun scrollToPermission() {
