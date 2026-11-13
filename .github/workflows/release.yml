@@ -29,6 +29,18 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Check signing secrets
+        env:
+          KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE" ] || [ -z "$STORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo "Release signing secrets are missing"
+            exit 1
+          fi
+
       - name: Read version and verify tag
         id: version
         shell: bash
@@ -40,17 +52,33 @@ jobs:
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Build debug APK
-        run: ./gradlew assembleDebug --no-daemon
+      - name: Decode release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+
+      - name: Build signed release APK
+        env:
+          RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Verify APK signature
+        run: |
+          "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --print-certs \
+            app/build/outputs/apk/release/app-release.apk
 
       - name: Prepare release asset
         run: |
-          cp app/build/outputs/apk/debug/app-debug.apk \
-            "navigation-switch-${{ steps.version.outputs.version }}-debug.apk"
+          cp app/build/outputs/apk/release/app-release.apk \
+            "navigation-switch-${{ steps.version.outputs.version }}.apk"
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: v${{ steps.version.outputs.version }}
-          files: navigation-switch-${{ steps.version.outputs.version }}-debug.apk
+          files: navigation-switch-${{ steps.version.outputs.version }}.apk
           generate_release_notes: true

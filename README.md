@@ -19,9 +19,9 @@
 
 ### 方式一：安装 APK
 
-从 [Releases](https://github.com/JegXiao/navigation-switch/releases/latest) 下载最新的 `navigation-switch-<版本>-debug.apk` 并安装。
+从 [Releases](https://github.com/JegXiao/navigation-switch/releases/latest) 下载最新的 `navigation-switch-<版本>.apk` 并安装。
 
-> CI 使用临时 debug 签名，不同次构建的 APK 签名可能不同，跨版本升级通常需要先卸载。卸载会清除 adb 授权、Shizuku 授权和桌面小组件。
+> 从 v1.2 起，Release 使用固定证书签名，后续版本可以直接覆盖安装。v1.0 / v1.1 的 CI debug 包签名不同，升级到 v1.2 需要先卸载一次；卸载会清除 adb 授权、Shizuku 授权和桌面小组件。
 
 安装后还需要完成一次授权：
 
@@ -101,6 +101,7 @@ cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.ges
 - Shizuku 服务在重启手机后需要重新启动（root 模式可在 Shizuku 内开启开机自启）。
 - 部分厂商 ROM 会忽略 `navigation_mode`，可能出现“提示成功但导航栏没变”。
 - 多用户 / 平行空间 / 分身应用中的设置相互独立，需要在对应空间内安装并授权。
+- Release APK 自 v1.2 起使用固定证书签名（SHA-256: `31:96:FF:52:57:7B:B2:4B:F8:37:13:D8:6D:45:81:6B:BC:B5:46:12:C0:63:7F:2C:9F:59:C1:8C:C5:A8:FB:EB`），keystore 只保存在本地安全目录和 GitHub Secrets，不在仓库中。
 
 ## 项目结构
 
@@ -136,9 +137,9 @@ app/src/main/java/rikka/shizuku/ShizukuAccess.java
 
 ### Install the APK
 
-Download the latest `navigation-switch-<version>-debug.apk` from [Releases](https://github.com/JegXiao/navigation-switch/releases/latest).
+Download the latest `navigation-switch-<version>.apk` from [Releases](https://github.com/JegXiao/navigation-switch/releases/latest).
 
-> CI builds are signed with a temporary debug key, so different builds may have different signatures. Updating across builds usually requires uninstalling first, which clears the adb grant, Shizuku authorization and widgets.
+> Starting with v1.2, release APKs use a fixed release certificate and can update each other. The v1.0 / v1.1 CI debug builds use a different signature; upgrading to v1.2 requires uninstalling once, which clears the adb grant, Shizuku authorization and widgets.
 
 Then grant the required permission once:
 
@@ -218,6 +219,7 @@ Switching back to 3-button writes `101` / `0` and disables the gestural overlay.
 - The Shizuku service must be restarted after a reboot (root mode can enable start-on-boot inside Shizuku).
 - Some vendor ROMs ignore `navigation_mode`; the app may report success while the navigation bar does not change.
 - Multi-user / Parallel Space / app clone environments have independent settings and require separate installation and authorization.
+- Release APKs use a fixed signing certificate from v1.2 onward (SHA-256: `31:96:FF:52:57:7B:B2:4B:F8:37:13:D8:6D:45:81:6B:BC:B5:46:12:C0:63:7F:2C:9F:59:C1:8C:C5:A8:FB:EB`). The keystore is stored only in a local secure directory and GitHub Secrets, never in this repository.
 
 ## Project Layout
 
